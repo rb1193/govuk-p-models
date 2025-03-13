@@ -1,0 +1,1 @@
+module WhitehallModule = { WhitehallApp, Client };
