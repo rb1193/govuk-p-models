@@ -18,6 +18,7 @@ type tWriteResponse = (editionId: int, userId: int, status: tResponseStatus);
 machine WhitehallApp
 {
     var leases: map[int, int];
+    var timers: map[int, Timer];
     start state Init
     {
         entry {
@@ -32,10 +33,14 @@ machine WhitehallApp
             } else {                
                 if ($) {
                     leases[request.editionId] = request.userId;
+                    timers[request.editionId] = CreateTimer(this, request.editionId);
+                    announce eWhitehallLeaseGranted, request.editionId;
                     send request.client, eLeaseRequestResponse, (editionId = request.editionId, userId = request.userId, status = SUCCESS);
                 } else {
                     if ($) {
                         leases[request.editionId] = request.userId;
+                        timers[request.editionId] = CreateTimer(this, request.editionId);
+                        announce eWhitehallLeaseGranted, request.editionId;
                     }
                     send request.client, eLeaseRequestResponse, (editionId = request.editionId, userId = request.userId, status = TIMEOUT);
                 }
@@ -47,10 +52,16 @@ machine WhitehallApp
                 if(leases[request.editionId] == request.userId) {
                     if ($) {
                         leases -= request.editionId;
+                        CancelTimer(timers[request.editionId]);
+                        timers -= request.editionId;
+                        announce eWhitehallLeaseReleased, request.editionId;
                         send request.client, eWriteRequestResponse, (editionId = request.editionId, userId = request.userId, status = SUCCESS);
                     } else {
                         if ($) {
                             leases -= request.editionId;
+                            CancelTimer(timers[request.editionId]);
+                            timers -= request.editionId;
+                            announce eWhitehallLeaseReleased, request.editionId;
                         }
                         send request.client, eWriteRequestResponse, (editionId = request.editionId, userId = request.userId, status = TIMEOUT);
                     }
@@ -62,9 +73,10 @@ machine WhitehallApp
             }
         }
 
-        // on eLeaseTimeout do (editionId: int) {
-        //     assert editionId in leases, format("Cannot time out a lease that was never acquired");
-        //     leases -= editionId;
-        // }
+        on eTimeOut do (editionId: int) {
+            leases -= editionId;
+            timers -= editionId;
+            announce eWhitehallLeaseTimedOut, editionId;
+        }
     }
 }

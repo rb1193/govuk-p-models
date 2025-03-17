@@ -1,3 +1,3 @@
 test tcWhitehallLeasing [main=TestWhitehallLeasing]:
-  assert LeaseAppliedSafely in
+  assert LeaseAppliedSafely, DeadLeasesTimeout in
   (union WhitehallModule, { TestWhitehallLeasing });

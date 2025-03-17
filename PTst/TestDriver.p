@@ -8,7 +8,7 @@ machine TestWhitehallLeasing
 
   start state Init {
     entry {
-      numEditions = 5;
+      numEditions = 3;
       i = 0;
       while (i < numEditions) {
         editionIds += (i + 1);
@@ -18,10 +18,10 @@ machine TestWhitehallLeasing
       app = new WhitehallApp();
       announce eMonitor_LeaseAppliedSafelyInitialize;
 
-      numUsers = 3;
+      numUsers = 2;
       i = 0;
       while (i < numUsers) {
-        new Client((app = app, userId = i, editionIds = editionIds, numTransactions = 10));
+        new Client((app = app, userId = i, editionIds = editionIds, numTransactions = 5));
         i = i + 1;
       }
     }

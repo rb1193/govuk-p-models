@@ -11,23 +11,24 @@ machine Client {
             userId = payload.userId;
             numTransactions = payload.numTransactions;
             processedTransactions = 0;
-            goto SendLeaseRequest;
+            goto SendLeaseRequest, choose(editionIds);
         }
     }
 
     state SendLeaseRequest {
-        entry {
+        entry (editionId: int) {
             if (processedTransactions < numTransactions) {            
-                send app, eLeaseRequestReceived, (editionId = choose(editionIds), userId = userId, client = this);
+                send app, eLeaseRequestReceived, (editionId = editionId, userId = userId, client = this);
             } else {
-                goto Finished;
+                // All transactions processed
+                raise halt;
             }
         }
         on eLeaseRequestResponse do (response: tLeaseResponse) {
             if (response.status == SUCCESS) {
                 goto SendWriteRequest, response.editionId;
             } else {
-                goto SendLeaseRequest;
+                goto SendLeaseRequest, response.editionId;
             }
         }
     }
@@ -39,18 +40,12 @@ machine Client {
         on eWriteRequestResponse do (response: tWriteResponse) {
             if (response.status == SUCCESS) {
                 processedTransactions = processedTransactions + 1;
-                goto SendLeaseRequest;
+                goto SendLeaseRequest, choose(editionIds);
             }
             if (response.status == ERROR) {
-                goto SendLeaseRequest;
+                goto SendLeaseRequest, choose(editionIds);
             }
             goto SendWriteRequest, response.editionId;
-        }
-    }
-
-    state Finished {
-        entry {
-            raise halt;
         }
     }
 }

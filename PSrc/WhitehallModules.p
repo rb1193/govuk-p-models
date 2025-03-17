@@ -1,1 +1,1 @@
-module WhitehallModule = { WhitehallApp, Client };
+module WhitehallModule = { WhitehallApp, Client, Timer };
