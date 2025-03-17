@@ -19,11 +19,11 @@ machine Timer {
     entry (payload: (_client : machine, _editionId: int)) {
       client = payload._client;
       editionId = payload._editionId;
-      goto TimerStarted;
+      goto TimerRunning;
     }
   }
 
-  state TimerStarted {
+  state TimerRunning {
     entry {
       if($) {
         send client, eTimeOut, editionId;
@@ -33,28 +33,10 @@ machine Timer {
       }
     }
 
-    on eDelayedTimeOut goto TimerDelayed;
+    on eDelayedTimeOut goto TimerRunning;
     on eCancelTimer do {
-        raise halt;
+      raise halt;
     }
-    defer eStartTimer;
-  }
-
-  state TimerDelayed {
-    entry {
-      if($) {
-        send client, eTimeOut, editionId;
-        raise halt;
-      } else {
-        // do nothing, wait for eCancelTimer and ignore any old eDelayedTimeOut
-      }
-    }
-
-    on eCancelTimer do {
-        raise halt;
-    }
-    defer eStartTimer;
-    ignore eDelayedTimeOut;
   }
 }
 
