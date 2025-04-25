@@ -1,0 +1,10 @@
+<!-- P Project file for the Publishing API optimistic locking model -->
+<Project>
+<ProjectName>PubApiOptimisticLocking</ProjectName>
+<InputFiles>
+	<PFile>./PSrc/</PFile>
+	<PFile>./PSpec/</PFile>
+	<PFile>./PTst/</PFile>
+</InputFiles>
+<OutputDir>./PGenerated/</OutputDir>
+</Project>
