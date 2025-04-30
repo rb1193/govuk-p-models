@@ -1,0 +1,1 @@
+module GovukPublishingModule = { WhitehallDatabase, PublishingApi };

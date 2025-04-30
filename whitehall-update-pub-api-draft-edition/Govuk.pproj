@@ -1,0 +1,10 @@
+<!-- P Project file for the GOV.UK models -->
+<Project>
+<ProjectName>Govuk</ProjectName>
+<InputFiles>
+	<PFile>./PSrc/</PFile>
+	<PFile>./PSpec/</PFile>
+	<PFile>./PTst/</PFile>
+</InputFiles>
+<OutputDir>./PGenerated/</OutputDir>
+</Project>
