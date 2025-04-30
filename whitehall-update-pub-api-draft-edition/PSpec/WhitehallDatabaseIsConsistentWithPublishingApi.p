@@ -1,10 +1,8 @@
 spec WhitehallDatabaseIsConsistentWithPublishingApi observes eWhitehallOpenDatabaseTransactionResponse, eWhitehallUpdateDatabaseResponse, ePublishingApiResponse, eWhitehallCommitDatabaseTransactionResponse, eWhitehallRollbackDatabaseTransactionResponse {
-    var transactionStarted: bool;
     var whitehallDbValue: int;
     var publishingApiValue: int;
     start state Init {
         entry {
-            transactionStarted = false;
             whitehallDbValue = 0;
             publishingApiValue = 0;
             goto WaitForTransactionStart;
@@ -13,7 +11,6 @@ spec WhitehallDatabaseIsConsistentWithPublishingApi observes eWhitehallOpenDatab
 
     state WaitForTransactionStart {
         on eWhitehallOpenDatabaseTransactionResponse do {
-            transactionStarted = true;
             goto WaitForUpdates;        
         }
     }
